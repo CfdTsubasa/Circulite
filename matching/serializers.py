@@ -1,6 +1,6 @@
-# from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 from rest_framework import serializers
-from matching.models import User
+from .models import Interest, UserInterest
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,3 +11,15 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
+
+class InterestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interest
+        fields = ['id', 'name']
+
+class UserInterestSerializer(serializers.ModelSerializer):
+    interest = InterestSerializer()
+
+    class Meta:
+        model = UserInterest
+        fields = ['id', 'user', 'interest']

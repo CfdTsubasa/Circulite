@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from rest_framework import viewsets
+# from .models import Interest, UserInterest
+from .serializers import InterestSerializer, UserInterestSerializer
+from rest_framework.permissions import IsAuthenticated
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -49,3 +53,19 @@ class UserInterest(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.interest.name}"
+    
+
+class InterestViewSet(viewsets.ModelViewSet):
+    queryset = Interest.objects.all()
+    serializer_class = InterestSerializer
+
+class UserInterestViewSet(viewsets.ModelViewSet):
+    queryset = UserInterest.objects.all()
+    serializer_class = UserInterestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

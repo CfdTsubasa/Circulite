@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User
+# from matching.models import Interest, UserInterest
 
 class CustomUserAdmin(UserAdmin):
     model = User
@@ -15,3 +15,5 @@ class CustomUserAdmin(UserAdmin):
     # ここで extra_fields は実際にモデルに存在するフィールド名に置き換えてください
 
 admin.site.register(User, CustomUserAdmin)
+# admin.site.register(Interest)
+# admin.site.register(UserInterest)
