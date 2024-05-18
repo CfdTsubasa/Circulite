@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Interest, UserInterest
+from .models import User,Interest, UserInterest
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,8 +18,16 @@ class InterestSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 class UserInterestSerializer(serializers.ModelSerializer):
-    interest = InterestSerializer()
+    interest = serializers.PrimaryKeyRelatedField(queryset=Interest.objects.all(), many=True)
 
     class Meta:
         model = UserInterest
-        fields = ['id', 'user', 'interest']
+        fields = ['user', 'interest']
+
+    def create(self, validated_data):
+        interests = validated_data.pop('interest')
+        user_interests = []
+        for interest in interests:
+            user_interest = UserInterest.objects.create(interest=interest, **validated_data)
+            user_interests.append(user_interest)
+        return user_interests

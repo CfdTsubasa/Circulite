@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from rest_framework import viewsets
-# from .models import Interest, UserInterest
-from .serializers import InterestSerializer, UserInterestSerializer
 from rest_framework.permissions import IsAuthenticated
 
 class UserManager(BaseUserManager):
@@ -52,20 +50,4 @@ class UserInterest(models.Model):
     interest = models.ForeignKey(Interest, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.user.email} - {self.interest.name}"
-    
-
-class InterestViewSet(viewsets.ModelViewSet):
-    queryset = Interest.objects.all()
-    serializer_class = InterestSerializer
-
-class UserInterestViewSet(viewsets.ModelViewSet):
-    queryset = UserInterest.objects.all()
-    serializer_class = UserInterestSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        return f"{self.user.id} - {self.interest.name}"
