@@ -15,19 +15,17 @@ class UserSerializer(serializers.ModelSerializer):
 class InterestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Interest
-        fields = ['id', 'name']
+        fields = ['id', 'name']  # レスポンスにnameを含める
 
 class UserInterestSerializer(serializers.ModelSerializer):
-    interest = serializers.PrimaryKeyRelatedField(queryset=Interest.objects.all(), many=True)
+    interest = serializers.PrimaryKeyRelatedField(queryset=Interest.objects.all(), many=False)
 
     class Meta:
         model = UserInterest
         fields = ['user', 'interest']
 
     def create(self, validated_data):
-        interests = validated_data.pop('interest')
-        user_interests = []
-        for interest in interests:
-            user_interest = UserInterest.objects.create(interest=interest, **validated_data)
-            user_interests.append(user_interest)
-        return user_interests
+        interest = validated_data.pop('interest')
+        user = validated_data.get('user')
+        user_interest = UserInterest.objects.create(user=user, interest=interest)
+        return user_interest

@@ -4,7 +4,7 @@ from .views import InterestViewSet, UserInterestViewSet
 
 router = DefaultRouter()
 router.register(r'interests', InterestViewSet)
-router.register(r'user-interests', UserInterestViewSet)
+router.register(r'user-interests', UserInterestViewSet, basename='user-interests')
 
 urlpatterns = [
     path('', include(router.urls)),  # ルーターのURLをインクルード

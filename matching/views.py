@@ -32,16 +32,6 @@ class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
     serializer_class = InterestSerializer
 
-# class UserInterestViewSet(viewsets.ModelViewSet):
-#     queryset = UserInterest.objects.all()
-#     serializer_class = UserInterestSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def get_queryset(self):
-#         return self.queryset.filter(user=self.request.user)
-
-#     def perform_create(self, serializer):
-#         serializer.save(user=self.request.user)
 
 class UserInterestViewSet(viewsets.ModelViewSet):
     queryset = UserInterest.objects.all()
@@ -50,13 +40,23 @@ class UserInterestViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            self.perform_create(serializer)
+            user_interest = serializer.save()  # 単一のUserInterestを保存
+            response_data = UserInterestSerializer(user_interest).data  # 単一のUserInterestをシリアライズ
             headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             print("Validation errors: ", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+    def destroy(self, request, *args, **kwargs):
+        print("test")
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except UserInterest.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
 
