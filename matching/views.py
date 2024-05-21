@@ -9,7 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
-
+from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
 
 class CreateUserView(APIView):
     def post(self, request, *args, **kwargs):
@@ -63,6 +64,21 @@ class UserInterestViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
     
+    @action(detail=False, methods=['delete'], url_path='delete-by-user-interest')
+    def delete_by_user_and_interest(self, request):
+        user_id = request.data.get('user')
+        interest_id = request.data.get('interest')
+
+        if not user_id or not interest_id:
+            return Response({"detail": "User ID and Interest ID are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user_interests = UserInterest.objects.filter(user_id=user_id, interest_id=interest_id)
+        
+        if not user_interests.exists():
+            return Response({"detail": "No matching UserInterest found."}, status=status.HTTP_404_NOT_FOUND)
+
+        user_interests.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
