@@ -9,3 +9,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/', include('matching.urls')),  # アプリのurlsを含める
 ]
+# python3 manage.py showmigrations
+# python3 manage.py runserver
+# python3 manage.py makemigrations
+# python3 manage.py migrate

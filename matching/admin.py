@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from matching.models import User ,Interest, UserInterest
+from matching.models import  Interest, UserInterest , CustomUser
 
 class CustomUserAdmin(UserAdmin):
-    model = User
+    model = CustomUser
     ordering = ('id',)  # ユーザーモデルの存在するフィールドに変更
-    list_display = ('id' , 'name', 'email', 'is_active', 'is_staff')  # name を追加
+    list_display = ('id' , 'name', 'email', 'is_active', 'is_staff','bio','date_joined')  # name を追加
     fieldsets = UserAdmin.fieldsets + (
         (None, {'fields': ('name',)}),
     )
@@ -19,6 +19,7 @@ class UserInterestAdmin(admin.ModelAdmin):
     ordering = ('id',)  # ユーザーモデルの存在するフィールドに変更
     list_display = ('id','interest','user')
 
-admin.site.register(User, CustomUserAdmin)
+# admin.site.register(CustomUser, UserAdmin)
+admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Interest)
 admin.site.register(UserInterest,UserInterestAdmin)
